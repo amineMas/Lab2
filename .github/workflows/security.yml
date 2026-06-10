@@ -1,1 +1,38 @@
-name: "SAST — Semgrep"
+name: Semgrep Security Scan
+
+on:
+  # Scanner à chaque pull request
+  pull_request: {}
+  # Scanner les pushs sur main
+  push:
+    branches:
+      - main
+
+jobs:
+  semgrep:
+    name: Analyse de sécurité
+    runs-on: ubuntu-24.04
+    container:
+      image: returntocorp/semgrep
+
+    steps:
+      # Récupérer le code
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      # Lancer le scan
+      - name: Scan Semgrep
+        run: |
+          semgrep --config=p/security-audit \
+                  --error \
+                  --json \
+                  -o semgrep-results.json \
+                  .
+
+      # Sauvegarder les résultats même si le scan échoue
+      - name: Upload des résultats
+        uses: actions/upload-artifact@v4.6.2
+        if: always()
+        with:
+          name: semgrep-results
+          path: semgrep-results.json
