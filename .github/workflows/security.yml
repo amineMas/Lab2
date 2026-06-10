@@ -24,6 +24,7 @@ jobs:
       - name: Scan Semgrep
         run: |
           semgrep --config=p/security-audit \
+                  --config=p/owasp-top-ten \
                   --error \
                   --json \
                   -o semgrep-results.json \
@@ -36,4 +37,3 @@ jobs:
         with:
           name: semgrep-results
           path: semgrep-results.json
-          
